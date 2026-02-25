@@ -1,0 +1,22 @@
+{
+  "name": "vibe-skills",
+  "owner": {
+    "name": "Pandazki",
+    "email": "onlrrr@gmail.com"
+  },
+  "metadata": {
+    "description": "A curated collection of Claude Code skills for vibe coding workflows",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "contextual-illustrator",
+      "description": "Generate context-aware illustrations using Gemini 3 Pro Image via OpenRouter or fal.ai. Analyzes surrounding content (text, tone, purpose) to produce images that fit naturally — hero images, inline illustrations, diagrams, and more. Supports dual-backend auto-routing by API key.",
+      "source": "./contextual-illustrator",
+      "strict": false,
+      "skills": [
+        "./contextual-illustrator"
+      ]
+    }
+  ]
+}

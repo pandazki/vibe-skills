@@ -18,14 +18,28 @@ Generate context-aware illustrations using Gemini 3 Pro Image. Analyze the scene
 
 ## Workflow
 
+### 0. Pre-check: API Key
+
+Before any generation, verify that `{SKILL_PATH}/.env` contains at least one valid API key (`OPENROUTER_API_KEY` or `FAL_KEY`).
+
+If the `.env` file is missing or contains no keys:
+1. Ask the user to provide an API key (OpenRouter recommended).
+2. Once the user provides the key, write it to `{SKILL_PATH}/.env`:
+   - `OPENROUTER_API_KEY=<key>` for OpenRouter
+   - `FAL_KEY=<key>` for fal.ai
+3. This only needs to happen once — the key persists across sessions.
+
+Key sources:
+- OpenRouter: https://openrouter.ai/keys
+- fal.ai: https://fal.ai/dashboard/keys
+
 ### 1. Environment
 
-- **API Key**: 脚本自动从 skill 根目录的 `.env` 加载，根据可用 key 自动路由后端：
-  - `OPENROUTER_API_KEY` → OpenRouter（优先，无需额外依赖）
+- **API Key**: The script auto-loads keys from `{SKILL_PATH}/.env` and routes to the appropriate backend:
+  - `OPENROUTER_API_KEY` → OpenRouter (preferred, no extra deps)
   - `FAL_KEY` → fal.ai
-  - 都没有 → 报错提示用户配置
-- **Python**: 始终用 `uv run` 执行脚本。如果报错缺少依赖，则在 skill 目录下执行 `cd {SKILL_PATH} && uv venv && uv pip install fal-client`，**不要用 pip install**。（OpenRouter 后端无需额外依赖）
-- 可通过 `--backend fal` 或 `--backend openrouter` 强制指定后端。
+- **Python**: Always use `uv run` to execute the script. If dependencies are missing, run `cd {SKILL_PATH} && uv venv && uv pip install fal-client` — **never use bare pip install**. (OpenRouter backend requires no extra deps.)
+- Use `--backend fal` or `--backend openrouter` to force a specific backend.
 
 ### 2. Analyze Context
 
@@ -115,8 +129,8 @@ When generating multiple images in one session:
 
 **Aspect ratios**: `auto`, `21:9`, `16:9`, `3:2`, `4:3`, `5:4`, `1:1`, `4:5`, `3:4`, `2:3`, `9:16`
 
-**Resolutions**: `1K`, `2K`, `4K`（both backends）
+**Resolutions**: `1K`, `2K`, `4K` (both backends)
 
 **Formats**: `png`, `jpeg`, `webp`
 
-**Safety tolerance**: `1` (strictest) to `6` (least strict), default `4`（fal.ai only）
+**Safety tolerance**: `1` (strictest) to `6` (least strict), default `4` (fal.ai only)
