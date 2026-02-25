@@ -17,6 +17,15 @@
       "skills": [
         "./"
       ]
+    },
+    {
+      "name": "web-explorer",
+      "description": "Access the internet to read, search, and research. Fetch any URL as clean LLM-friendly markdown, search the web with full content extraction, or run deep multi-step research for complex questions.",
+      "source": "./web-explorer",
+      "strict": false,
+      "skills": [
+        "./"
+      ]
     }
   ]
 }

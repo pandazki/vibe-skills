@@ -12,6 +12,7 @@ For more information about skills, check out:
 | Skill | Description |
 |---|---|
 | [contextual-illustrator](./contextual-illustrator) | Context-aware image generation using Gemini 3 Pro Image, with OpenRouter / fal.ai dual-backend |
+| [web-explorer](./web-explorer) | Read, search, and research web content — fetch URLs, search the web, or run deep multi-step research |
 
 ## Install in Claude Code
 
