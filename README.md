@@ -18,7 +18,7 @@ For more information about skills, check out:
 Register this repository as a Plugin marketplace:
 
 ```
-/plugin marketplace add Pandazki/vibe-skills
+/plugin marketplace add pandazki/vibe-skills
 ```
 
 Then install a skill:
