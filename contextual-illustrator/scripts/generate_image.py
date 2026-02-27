@@ -150,7 +150,7 @@ def generate_via_openrouter(
                 images_data.append(url)
 
     # Format 2: message.content as array with image parts
-    if isinstance(message.get("content"), list):
+    elif isinstance(message.get("content"), list):
         for part in message["content"]:
             if part.get("type") == "image_url":
                 url = part.get("image_url", {}).get("url", "")
