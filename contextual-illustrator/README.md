@@ -1,6 +1,9 @@
 # Contextual Illustrator
 
-Context-aware image generation skill using Gemini 3 Pro Image, with OpenRouter and fal.ai dual-backend support.
+Context-aware image generation skill supporting two models with OpenRouter and fal.ai backends:
+
+- **Gemini 3 Pro Image** (default) — general illustrations, painterly/artistic work. OpenRouter or fal.ai.
+- **OpenAI GPT-Image-2** — fine-grained typography, legible text, signage, UI mockups, and precise mask-based edits. fal.ai only. Invoke with `--model gpt-image-2`.
 
 Analyzes surrounding content (text, tone, existing visuals, audience) to produce images that fit naturally into documents, blog posts, presentations, and more — rather than generating generic results from bare prompts.
 
@@ -9,16 +12,16 @@ Analyzes surrounding content (text, tone, existing visuals, audience) to produce
 Create `.env` in this directory (copy from `.env.example`), configure at least one backend:
 
 ```env
-# OpenRouter (recommended, no extra Python deps)
-OPENROUTER_API_KEY=sk-or-v1-xxxx
-
-# fal.ai (requires: uv pip install fal-client)
+# fal.ai (recommended; required for the default gpt-image-2 model)
 FAL_KEY=xxxx
+
+# OpenRouter (fallback, Gemini 3 Pro only, no extra Python deps)
+OPENROUTER_API_KEY=sk-or-v1-xxxx
 ```
 
 Get your keys:
-- OpenRouter: https://openrouter.ai/keys
 - fal.ai: https://fal.ai/dashboard/keys
+- OpenRouter: https://openrouter.ai/keys
 
 ## How It Works
 
