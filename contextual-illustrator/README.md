@@ -1,9 +1,9 @@
 # Contextual Illustrator
 
-Context-aware image generation skill supporting two models with OpenRouter and fal.ai backends:
+Context-aware image generation skill supporting two models with fal.ai and OpenRouter backends:
 
-- **Gemini 3 Pro Image** (default) — general illustrations, painterly/artistic work. OpenRouter or fal.ai.
-- **OpenAI GPT-Image-2** — fine-grained typography, legible text, signage, UI mockups, and precise mask-based edits. fal.ai only. Invoke with `--model gpt-image-2`.
+- **OpenAI GPT-Image-2** (default) — general use, plus fine-grained typography, legible text, signage, UI mockups, and precise mask-based edits. fal.ai only.
+- **Gemini 3 Pro Image** — painterly/artistic illustrations, broad stylistic range. fal.ai or OpenRouter. Opt in with `--model gemini-3-pro`.
 
 Analyzes surrounding content (text, tone, existing visuals, audience) to produce images that fit naturally into documents, blog posts, presentations, and more — rather than generating generic results from bare prompts.
 
