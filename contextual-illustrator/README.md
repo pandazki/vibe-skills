@@ -25,6 +25,16 @@ Get your keys:
 - fal.ai: https://fal.ai/dashboard/keys
 - OpenRouter: https://openrouter.ai/keys
 
+## Runtimes
+
+Three interchangeable scripts live under `scripts/` — same flags, same JSON output. Pick whichever matches the host:
+
+- `scripts/generate_image.py` — Python 3.10+ with `fal-client` (set up via `uv venv && uv pip install fal-client`)
+- `scripts/generate_image.mjs` — Node ≥ 18 or Bun, zero npm deps
+- `scripts/generate_image.sh` — bash + `curl` + `jq`, no language runtime needed
+
+The shell version uses fal.ai's sync mode (`https://fal.run/<endpoint>`) for one-shot HTTP — no queue polling.
+
 ## How It Works
 
 1. Scans nearby `.ctxillu.md` sidecars for any project-specific style or preferences from prior generations

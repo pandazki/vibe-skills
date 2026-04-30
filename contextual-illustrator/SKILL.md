@@ -35,11 +35,26 @@ Key sources:
 
 ### 1. Environment
 
-- **API Key**: The script auto-loads keys from `{SKILL_PATH}/.env` and routes to the appropriate backend:
-  - `FAL_KEY` → fal.ai (preferred; required for default model `gpt-image-2`)
-  - `OPENROUTER_API_KEY` → OpenRouter (Gemini 3 Pro only)
-- **Python**: Always use `uv run` to execute the script. If dependencies are missing, run `cd {SKILL_PATH} && uv venv && uv pip install fal-client` — **never use bare pip install**.
-- Use `--backend fal` or `--backend openrouter` to force a specific backend.
+**API key**. All three runtime scripts auto-load keys from `{SKILL_PATH}/.env` and route to the appropriate backend:
+
+- `FAL_KEY` → fal.ai (preferred; required for default model `gpt-image-2`)
+- `OPENROUTER_API_KEY` → OpenRouter (Gemini 3 Pro only)
+
+Force a specific backend with `--backend fal` or `--backend openrouter`.
+
+**Pick a runtime**. Three interchangeable scripts ship in `scripts/` — same flags, same JSON output. Use whichever fits the host; **don't install a runtime that isn't already there**.
+
+| Script | Requires | When to pick |
+|---|---|---|
+| `scripts/generate_image.py` | Python 3.10+ and `fal-client` | Default. Reach for this when Python + uv are already on the box. |
+| `scripts/generate_image.mjs` | Node ≥ 18 or Bun, zero npm deps | Node/Bun host without Python. |
+| `scripts/generate_image.sh` | bash, `curl`, `jq` | Plain Linux/macOS shell with no language runtime. Uses fal.ai sync mode internally — one POST per call, no polling. |
+
+**Python setup**: if `{SKILL_PATH}/.venv` is missing or its libpython link is stale (`dyld: Library not loaded` errors), rebuild with `cd {SKILL_PATH} && uv venv && uv pip install fal-client`. Then invoke directly with `{SKILL_PATH}/.venv/bin/python scripts/generate_image.py …` — that's more reliable than `uv run`, which doesn't auto-discover an ad-hoc `.venv` without a `pyproject.toml`.
+
+**Bun note**: `bun scripts/generate_image.mjs …` works the same as `node`. Bun's faster startup is nice for CI loops.
+
+**Bash note**: macOS ships bash 3.2, which the script supports. Confirm `jq` is installed (`brew install jq` if not).
 
 ### 2. Analyze Context
 
@@ -134,10 +149,17 @@ If the user has expressed a density preference (`minimal` / `balanced` / `dense`
 
 ### 6. Generate
 
+The examples below use the Python script. To use the JS or bash runtime, swap the invocation only — flags and JSON output are identical:
+
+| Runtime | Replace `.venv/bin/python scripts/generate_image.py` with |
+|---|---|
+| Node / Bun | `node scripts/generate_image.mjs` (or `bun ...`) |
+| bash + curl | `bash scripts/generate_image.sh` |
+
 GPT-Image-2 (default):
 
 ```bash
-cd {SKILL_PATH} && uv run python scripts/generate_image.py \
+cd {SKILL_PATH} && .venv/bin/python scripts/generate_image.py \
   "Your crafted prompt here" \
   --aspect-ratio 16:9 \
   --quality high \
@@ -149,7 +171,7 @@ cd {SKILL_PATH} && uv run python scripts/generate_image.py \
 GPT-Image-2 edit (modify an existing image, optionally with a mask):
 
 ```bash
-cd {SKILL_PATH} && uv run python scripts/generate_image.py \
+cd {SKILL_PATH} && .venv/bin/python scripts/generate_image.py \
   "Same scene, but replace the headline text with 'Hello World'" \
   --image-urls https://example.com/source.png \
   --mask-url https://example.com/mask.png \
@@ -160,7 +182,7 @@ cd {SKILL_PATH} && uv run python scripts/generate_image.py \
 Gemini 3 Pro (opt-in):
 
 ```bash
-cd {SKILL_PATH} && uv run python scripts/generate_image.py \
+cd {SKILL_PATH} && .venv/bin/python scripts/generate_image.py \
   "Your crafted prompt here" \
   --model gemini-3-pro \
   --aspect-ratio 16:9 \
