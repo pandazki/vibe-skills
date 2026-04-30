@@ -43,7 +43,9 @@ Key sources:
 
 ### 2. Analyze Context
 
-Before crafting the prompt, reason through these dimensions:
+**First, scan for prior sidecars.** Glob the target output directory and its immediate parent for `*.ctxillu.md` files (e.g., `./images/*.ctxillu.md`, `./*.ctxillu.md`). If any exist, read them in full before crafting the prompt — they capture committed style, palette, text density, and standing user preferences from prior generations in this project. Treat them as authoritative for this project's house style and override generic inference from content alone.
+
+Then reason through these dimensions:
 
 - **Purpose**: What role does this image serve? (hero image, inline illustration, icon, diagram, decorative)
 - **Content alignment**: What is the surrounding text about? What key concepts should the image convey?
@@ -65,11 +67,12 @@ Rules of thumb:
 
 ### 3. Determine Style
 
-**If style is explicitly specified** → follow it exactly.
+Resolve style in this priority order — the higher item always wins:
 
-**If style is inferable from context** (e.g., existing images, brand guidelines, document theme) → match that style. When generating multiple images in a session, maintain consistency by reusing the same style descriptors.
-
-**If no style context exists** → default to the "elegant minimal" (素雅) baseline:
+1. **Explicit user instruction this turn** — follow exactly.
+2. **Sibling sidecars** (`.ctxillu.md` discovered in step 2) — adopt their style descriptors verbatim. This is how a project keeps a coherent look across many illustrations over weeks or months. If multiple sidecars disagree, prefer the most recent one but flag the divergence to the user.
+3. **Inferred from context** — existing images nearby, brand guidelines, document theme.
+4. **"Elegant minimal" (素雅) baseline** if nothing else applies:
 
 > Soft muted color palette, clean composition, subtle textures, restrained use of detail,
 > generous whitespace, natural lighting, understated elegance.
@@ -78,6 +81,8 @@ Style descriptors to append to prompts for the default aesthetic:
 - `soft muted colors, clean minimal composition, subtle texture`
 - `elegant and understated, gentle natural lighting`
 - `sophisticated simplicity, restrained palette`
+
+When generating multiple images in a session, reuse the same style descriptors so the set looks like one project, not five.
 
 ### 4. Craft the Prompt
 
@@ -94,6 +99,23 @@ Build a detailed image generation prompt that incorporates the analysis above. A
 > A clean architectural diagram-style illustration showing interconnected service nodes,
 > each represented as simple geometric shapes connected by thin lines, soft muted blue
 > and gray palette, minimal flat design, generous whitespace, technical yet approachable.
+
+#### On text density and content richness
+
+Match text density to **what the image is for** — not to outdated beliefs about what image models can do. Both `gpt-image-2` and `gemini-3-pro` render text and information-dense layouts substantially better than diffusion-era models: labels, tables, headlines, small annotations all come out legible. A common failure mode here is the agent reflexively shrinking text out of habit ("a dashboard with some metrics"), not the model failing on a fully-spelled-out prompt. Recalibrate.
+
+There are two regimes, and the right amount of text in each is very different:
+
+- **Information-carrying images** (UI mockups, dashboards, infographics, diagrams with labels, charts with annotations, document or page renderings) — pursue **accuracy and completeness**. List the exact strings in full: if the surrounding doc has a 5-item list, name all 5; if it has three KPI cards, write all three values. Don't paraphrase, don't substitute "etc.", don't fall back to placeholder squiggles. The model will render what you specify.
+- **Atmospheric / decorative images** (hero photography, abstract banners, mood pieces, illustrative spot-art) — little or no rendered text is normal and often preferred. Don't pad with copy just to fill space; let the surrounding page handle headlines.
+
+If the user has expressed a density preference (`minimal` / `balanced` / `dense`) in this session or in a sidecar, respect it.
+
+**Bad** (information-carrying, vague): "A blog hero showing a SaaS dashboard with some metrics."
+**Good** (information-carrying, specified): "A blog hero showing a SaaS dashboard titled 'Sales Pipeline — Q4 2025', with sidebar items 'Overview / Deals / Contacts / Reports / Settings' and three KPI cards: 'Pipeline: $4.2M', 'Closed Won: $1.8M', 'Win Rate: 38%'."
+
+**Bad** (information-carrying, vague): "A diagram of an authentication flow."
+**Good** (information-carrying, specified): "A sequence diagram with four labeled lanes — 'Browser', 'API Gateway', 'Auth Service', 'Database' — and labeled arrows between them: 'POST /login', 'verify credentials', 'SELECT user', 'JWT token', '200 OK'."
 
 ### 5. Choose Parameters
 
@@ -157,13 +179,84 @@ After generating, integrate the image into the content:
 - Add meaningful alt text derived from the prompt and context
 - Verify the image fits the surrounding content's flow
 
+### 8. Capture Spec (judgment call — default off)
+
+A sidecar is a small markdown file written next to the image — `<image-stem>.ctxillu.md` — that records the production decisions for that image: subject, style, exact text strings, user preferences, and the prompt used. Future generations in the same project can read these sidecars (step 2) to keep the look consistent over time and across sessions.
+
+Sidecars are **not** written by default. Write one only when the work has a future — most asks are one-off and don't need the housekeeping. Use judgment based on the rubric below; when uncertain, generate first and ask a single short question.
+
+**Write a sidecar when any of these is true:**
+- A `.ctxillu.md` already exists in the target directory (the project is already using sidecars — keep up the convention).
+- The user has expressed style preferences this session (palette, mood, brand tone, text density, font choices) that should outlive this turn.
+- The image lives in a long-lived structure: a repo, blog, doc site, presentation deck, design system — not a scratch / tmp / `~/Downloads` dir.
+- The image is part of a series (`fig1` + `fig2`, hero + inline, cover + thumbnails) where future images need to match.
+- The user explicitly asked to "match", "stay consistent with", or "use the same style as" prior work.
+- The user is iterating — regenerating with adjustments — which itself signals the image has a lifecycle.
+
+**Skip when** clearly one-off: throwaway visual, scratch directory, single quick request with no broader context, generated content that won't be reused.
+
+**If genuinely ambiguous** (e.g., reasonable doc-level project but unclear whether more images are coming), generate and integrate the image first, then ask once — briefly: *"Want me to drop a `.ctxillu.md` next to it? It saves the style and text decisions so the next image in this set can match."* One question, easy yes/no, don't push.
+
+#### Sidecar template
+
+Write the sidecar with the `Write` tool. Use this template — fill every section that applies, omit ones that don't, keep it tight (aim for under 60 lines):
+
+```markdown
+---
+image: <filename>.png
+generated_at: <ISO 8601 UTC, e.g. 2026-04-30T14:22:00Z>
+model: <gpt-image-2 | gemini-3-pro>
+backend: <fal | openrouter>
+aspect_ratio: <e.g. 16:9>
+quality: <low | medium | high>           # gpt-image-2 only
+resolution: <1K | 2K | 4K>               # gemini-3-pro only
+text_density: <minimal | balanced | dense>  # only when image carries text
+---
+
+# Spec: <filename>
+
+## Context
+Where this image is used and what surrounding content it illustrates.
+
+## Subject
+What the image depicts.
+
+## Style
+Visual treatment — palette, mood, medium, references. Phrase descriptors so they can be reused **verbatim** in future prompts (e.g. "soft muted blue + warm gray, flat geometric, generous whitespace, gentle natural lighting").
+
+## Composition
+Framing, perspective, layout choices.
+
+## Text & Typography
+Exact strings rendered in the image, density preference, font character.
+
+## User Preferences
+Standing preferences from the user that should persist across regenerations. Quote where useful — e.g. *"don't use cartoon styles"*, *"match brand color #4A90E2"*, *"prefer dense labels over abstract shapes"*.
+
+## Prompt
+> The exact prompt sent to the model.
+
+## Iteration Notes
+(optional — only when the image is regenerated)
+- 2026-04-30 — initial generation
+```
+
+#### Regenerating an image that already has a sidecar
+
+If a sidecar already exists for the filename being overwritten:
+
+1. Read the existing sidecar first.
+2. Refresh the **Context / Subject / Style / Composition / Text & Typography / Prompt** sections to reflect the new state.
+3. **Preserve User Preferences** — only remove an entry if the user explicitly retracted it.
+4. Append a one-line entry to **Iteration Notes** with date and what changed (e.g., `2026-04-30 — switched palette from cool blue/gray to warm earth tones at user's request`).
+
+This way the sidecar acts as a living spec rather than a frozen log.
+
 ## Style Consistency Protocol
 
-When generating multiple images in one session:
+**Within a session** — after the first image, record the style descriptors used and reuse them verbatim for subsequent images. If the user changes style mid-session, adopt the new style going forward.
 
-1. After the first image, record the style descriptors used.
-2. For subsequent images, prepend the same style descriptors to maintain visual consistency.
-3. If the user explicitly changes style mid-session, adopt the new style and apply it going forward.
+**Across sessions** — sidecars (`.ctxillu.md`, see step 8) carry style continuity. When step 2 finds existing sidecars in the target directory, they are the source of truth for "what this project looks like." Adopt their descriptors verbatim before falling back to inference or defaults.
 
 ## API Reference
 

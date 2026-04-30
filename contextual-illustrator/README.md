@@ -1,5 +1,7 @@
 # Contextual Illustrator
 
+![Five-stage workflow: Scan sidecars, Analyze context, Craft prompt, Generate image, Capture spec — with a feedback loop from Capture back to Scan that carries style across sessions.](images/workflow-overview.png)
+
 Context-aware image generation skill supporting two models with fal.ai and OpenRouter backends:
 
 - **OpenAI GPT-Image-2** (default) — general use, plus fine-grained typography, legible text, signage, UI mockups, and precise mask-based edits. fal.ai only.
@@ -25,10 +27,20 @@ Get your keys:
 
 ## How It Works
 
-1. Analyzes the surrounding context — purpose, content, tone, existing visuals
-2. Determines appropriate style (explicit, inferred from context, or defaults to "elegant minimal")
-3. Crafts a detailed generation prompt incorporating all context
-4. Chooses parameters (aspect ratio, resolution, format) based on placement
-5. Generates via `scripts/generate_image.py` and integrates into content
+1. Scans nearby `.ctxillu.md` sidecars for any project-specific style or preferences from prior generations
+2. Analyzes the surrounding context — purpose, content, tone, existing visuals
+3. Determines appropriate style (explicit → sidecars → inferred → "elegant minimal" default)
+4. Crafts a detailed generation prompt incorporating all context, with exact text strings when the image carries text
+5. Chooses parameters (aspect ratio, resolution, format) based on placement
+6. Generates via `scripts/generate_image.py` and integrates into content
+7. For long-lived projects, optionally writes a `.ctxillu.md` sidecar so future images can match
+
+## Style Continuity Across Sessions
+
+For projects with multiple illustrations over time (a repo, blog, doc site, design system), the skill can drop a small `.ctxillu.md` sidecar next to each generated image. The sidecar captures the style descriptors, exact text strings, user preferences, and the prompt used.
+
+Future generations in the same directory pick these up automatically and produce visually consistent companions — solving the "next session starts from scratch" drift problem.
+
+Sidecars are **off by default** — most asks are one-off and don't need the bookkeeping. The skill turns them on by judgment when the work looks long-lived (existing sibling sidecars, expressed preferences, image series, project repo, etc.) and asks once when uncertain.
 
 See `SKILL.md` for the full workflow instructions that Claude follows.
