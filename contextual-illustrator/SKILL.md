@@ -44,11 +44,20 @@ Force a specific backend with `--backend fal` or `--backend openrouter`.
 
 **Pick a runtime**. Three interchangeable scripts ship in `scripts/` — same flags, same JSON output. Use whichever fits the host; **don't install a runtime that isn't already there**.
 
-| Script | Requires | When to pick |
+| Script | Requires | Notes |
 |---|---|---|
-| `scripts/generate_image.py` | Python 3.10+ and `fal-client` | Default. Reach for this when Python + uv are already on the box. |
-| `scripts/generate_image.mjs` | Node ≥ 18 or Bun, zero npm deps | Node/Bun host without Python. |
-| `scripts/generate_image.sh` | bash, `curl`, `jq` | Plain Linux/macOS shell with no language runtime. Uses fal.ai sync mode internally — one POST per call, no polling. |
+| `scripts/generate_image.py` | Python 3.10+ and `fal-client` | Most fully tested path. |
+| `scripts/generate_image.mjs` | Node ≥ 18 or Bun, zero npm deps | Zero setup once the runtime is on PATH. Bun's startup is a touch faster. |
+| `scripts/generate_image.sh` | bash, `curl`, `jq` | Uses fal.ai sync mode (`https://fal.run/<endpoint>`) — one POST per call, no polling. Perfectly fine for production / CI / minimal containers. |
+
+**Pick by probing — first hit wins**:
+
+1. `{SKILL_PATH}/.venv/bin/python -c 'import fal_client'` succeeds → Python.
+2. `command -v bun` or `command -v node` → JS.
+3. `command -v curl && command -v jq` → bash.
+4. None of the above → bootstrap Python: `cd {SKILL_PATH} && uv venv && uv pip install fal-client`, then invoke `{SKILL_PATH}/.venv/bin/python …`.
+
+Probe once per session and stay with the choice — don't re-probe between images. If the chosen runtime starts failing mid-session (Python venv breaks, etc.), fall through the list rather than fighting to fix it.
 
 **Python setup**: if `{SKILL_PATH}/.venv` is missing or its libpython link is stale (`dyld: Library not loaded` errors), rebuild with `cd {SKILL_PATH} && uv venv && uv pip install fal-client`. Then invoke directly with `{SKILL_PATH}/.venv/bin/python scripts/generate_image.py …` — that's more reliable than `uv run`, which doesn't auto-discover an ad-hoc `.venv` without a `pyproject.toml`.
 
