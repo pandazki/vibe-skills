@@ -1,8 +1,8 @@
 ---
 name: contextual-illustrator
 description: >
-  Generate contextual illustrations for documents, webpages, and any content using Gemini 3 Pro Image
-  or OpenAI GPT-Image-2, via OpenRouter or fal.ai (auto-routed by API key).
+  Generate contextual illustrations for documents, webpages, and any content using OpenAI GPT-Image-2
+  (default) or Gemini 3 Pro Image, via fal.ai or OpenRouter (auto-routed by API key).
   Use this skill whenever an image, illustration, or visual is needed in context — including but not limited to:
   document illustrations, blog post hero images, webpage banners, diagram placeholders, icon-style graphics,
   presentation visuals, or any scenario where visual content would enhance the output.
@@ -12,7 +12,7 @@ description: >
 
 # Contextual Illustrator
 
-Generate context-aware illustrations using Gemini 3 Pro Image or OpenAI GPT-Image-2. Analyze the scene, infer what image is needed, and produce visuals that fit naturally into the surrounding content.
+Generate context-aware illustrations using OpenAI GPT-Image-2 (default) or Gemini 3 Pro Image. Analyze the scene, infer what image is needed, and produce visuals that fit naturally into the surrounding content.
 
 **Isolation**: Delegate image generation to a sub-agent (Task tool) when possible, to avoid polluting the main conversation context with image generation details. Pass the sub-agent the relevant context summary, style notes, and output path.
 

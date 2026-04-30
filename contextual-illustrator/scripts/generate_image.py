@@ -395,7 +395,7 @@ def generate_via_fal_gpt_image_2(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate images (Gemini 3 Pro or GPT-Image-2; auto-routes between OpenRouter and fal.ai)"
+        description="Generate images (GPT-Image-2 default, or Gemini 3 Pro; auto-routes between fal.ai and OpenRouter)"
     )
     parser.add_argument("prompt", help="Text prompt for image generation")
     parser.add_argument("--model", default="gpt-image-2",
