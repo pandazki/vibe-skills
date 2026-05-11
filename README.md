@@ -39,18 +39,22 @@ After installing, just mention the skill in conversation. For example: "Generate
 
 ## Contributing
 
-1. Each skill lives in its own directory at the repo root
+1. Each plugin lives in its own directory at the repo root, with a `.claude-plugin/plugin.json` manifest and the skill under `skills/<plugin-name>/` (Claude Code auto-discovers any `skills/<name>/SKILL.md`)
 2. Every skill must include a `SKILL.md` (instructions for Claude) and a `README.md` (human docs)
-3. Register new skills in `.claude-plugin/marketplace.json`
+3. Register new plugins in `.claude-plugin/marketplace.json` with just `name`, `source`, and `description` — components are discovered from the plugin's own `plugin.json` / `skills/` directory, so don't add a `skills` path here
 
-### Skill directory structure
+### Plugin directory structure
 
 ```
-your-skill/
-├── SKILL.md          # Skill instructions consumed by Claude Code
-├── README.md         # Human-readable documentation
-├── .env.example      # API key template (if needed)
-└── scripts/          # Supporting scripts
+your-plugin/
+├── .claude-plugin/
+│   └── plugin.json       # Plugin manifest (name, version, description)
+└── skills/
+    └── your-plugin/
+        ├── SKILL.md          # Skill instructions consumed by Claude Code
+        ├── README.md         # Human-readable documentation
+        ├── .env.example      # API key template (if needed)
+        └── scripts/          # Supporting scripts
 ```
 
 ## License

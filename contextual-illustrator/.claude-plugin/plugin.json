@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "contextual-illustrator",
+  "version": "1.0.0",
+  "description": "Generate context-aware illustrations using Gemini 3 Pro Image via OpenRouter or fal.ai. Analyzes surrounding content (text, tone, purpose) to produce images that fit naturally — hero images, inline illustrations, diagrams, and more. Supports dual-backend auto-routing by API key.",
+  "author": {
+    "name": "Pandazki",
+    "email": "onlrrr@gmail.com"
+  },
+  "license": "MIT"
+}

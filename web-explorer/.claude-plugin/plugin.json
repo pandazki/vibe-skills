@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "web-explorer",
+  "version": "1.0.0",
+  "description": "Access the internet to read, search, and research. Fetch any URL as clean LLM-friendly markdown, search the web with full content extraction, or run deep multi-step research for complex questions.",
+  "author": {
+    "name": "Pandazki",
+    "email": "onlrrr@gmail.com"
+  },
+  "license": "MIT"
+}
